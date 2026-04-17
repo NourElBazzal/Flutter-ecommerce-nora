@@ -7,7 +7,7 @@ Développement Mobile en Flutter
 
 ## Description
 
-LUMIS est une application mobile de e-commerce de vêtements développée avec Flutter et Firebase.  
+NORA est une application mobile de e-commerce de vêtements développée avec Flutter et Firebase.  
 Elle permet aux utilisateurs de parcourir un catalogue de vêtements, de gérer leur panier,  
 de modifier leur profil et d'ajouter de nouveaux vêtements grâce à une détection automatique  
 de catégorie par Intelligence Artificielle (TFLite).
@@ -16,7 +16,7 @@ de catégorie par Intelligence Artificielle (TFLite).
 
 ## Fonctionnalités réalisées
 
-### MVP 
+### MVP
 
 - [x] **US#1** - Interface de login avec vérification Firebase
 - [x] **US#2** - Liste des vêtements récupérée depuis Firestore (vue en grille)
