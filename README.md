@@ -17,6 +17,7 @@ de catégorie par Intelligence Artificielle (TFLite).
 ## Fonctionnalités réalisées
 
 ### MVP (12/20)
+
 - [x] **US#1** - Interface de login avec vérification Firebase
 - [x] **US#2** - Liste des vêtements récupérée depuis Firestore (vue en grille)
 - [x] **US#3** - Détail d'un vêtement avec ajout au panier
@@ -32,7 +33,7 @@ Le modèle de détection de catégorie a été entraîné avec **Google Teachabl
 sur des images de vêtements réparties en 4 catégories :
 
 - 👖 Pantalon
-- 🩳 Short  
+- 🩳 Short
 - 👕 Haut
 - 🧥 Veste
 
@@ -46,7 +47,7 @@ Images utilisées pour l'entraînement : disponibles dans `assets/images/trainin
 ## Utilisateurs de test
 
 | Login | Password |
-|-------|----------|
+| ----- | -------- |
 | user1 | user1    |
 | user2 | user2    |
 
@@ -66,15 +67,27 @@ Images utilisées pour l'entraînement : disponibles dans `assets/images/trainin
 ## Lancer le projet
 
 ### Prérequis
-- Flutter SDK installé
-- Chrome ou Edge
 
-### Installation
+- Flutter SDK installé
+- Google Chrome ou Microsoft Edge
+- Git
+
+### Cloner le projet
 
 ```bash
-git clone https://github.com/TON_USERNAME/MIAGE-TP2-Flutter.git
-cd MIAGE-TP2-Flutter
+git clone https://github.com/NourElBazzal/Flutter-ecommerce-nora.git
+cd Flutter-ecommerce-nora
+```
+
+### Installer les dépendances
+
+```bash
 flutter pub get
+```
+
+### Lancer l'application
+
+```bash
 flutter run -d chrome
 ```
 
