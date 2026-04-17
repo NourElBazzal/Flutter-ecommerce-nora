@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="NORA">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>NORA</title>
+  <link rel="manifest" href="manifest.json">
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite@0.0.1-alpha.9/dist/tf-tflite.min.js"></script>
+
+  <script>
+    (function () {
+      var CATEGORIES = ['Pantalon', 'Short', 'Haut', 'Veste'];
+      var _classifier = null;
+
+      window.initNoraModel = function (modelUrl) {
+        if (_classifier) return Promise.resolve();
+        var tfliteRuntime = (window.tflite) ||
+          (window.tf && window.tf.tflite);
+        if (!tfliteRuntime || !tfliteRuntime.loadTFLiteModel) {
+          return Promise.reject(new Error('TFLite runtime not available'));
+        }
+        return tfliteRuntime.loadTFLiteModel(modelUrl).then(function (m) {
+          _classifier = m;
+          console.log('[NORA] Model loaded successfully');
+        });
+      };
+
+      window.runNoraDetection = function (imageUrl) {
+        return new Promise(function (resolve, reject) {
+          if (!_classifier) {
+            reject(new Error('[NORA] Model not initialized'));
+            return;
+          }
+          var imgEl = new Image();
+          imgEl.crossOrigin = 'anonymous';
+          imgEl.onload = function () {
+            try {
+              window.tf.tidy(function () {
+                var inputTensor = window.tf.browser.fromPixels(imgEl);
+                var resized = window.tf.image.resizeBilinear(inputTensor, [224, 224]);
+                var batched = resized.expandDims(0);
+                var normalized = batched.div(127.5).sub(1);
+                var outputTensor = _classifier.predict(normalized);
+                var scores = outputTensor.dataSync();
+                outputTensor.dispose();
+                var bestIndex = 0;
+                for (var i = 1; i < scores.length; i++) {
+                  if (scores[i] > scores[bestIndex]) bestIndex = i;
+                }
+                var detectedLabel = CATEGORIES[bestIndex] || 'Haut';
+                console.log('[NORA] Detected:', detectedLabel);
+                resolve({ categoryIndex: bestIndex, categoryName: detectedLabel });
+              });
+            } catch (err) { reject(err); }
+          };
+          imgEl.onerror = function () {
+            reject(new Error('[NORA] Failed to load image'));
+          };
+          imgEl.src = imageUrl;
+        });
+      };
+    })();
+  </script>
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
