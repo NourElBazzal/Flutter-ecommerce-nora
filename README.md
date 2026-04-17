@@ -16,7 +16,7 @@ de catégorie par Intelligence Artificielle (TFLite).
 
 ## Fonctionnalités réalisées
 
-### MVP (12/20)
+### MVP 
 
 - [x] **US#1** - Interface de login avec vérification Firebase
 - [x] **US#2** - Liste des vêtements récupérée depuis Firestore (vue en grille)
