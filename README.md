@@ -1,4 +1,4 @@
-# LUMIS - Application Flutter de vente de vêtements
+# NORA - Application Flutter de vente de vêtements
 
 Projet réalisé dans le cadre du TP2 - MIAGE IA2  
 Développement Mobile en Flutter
