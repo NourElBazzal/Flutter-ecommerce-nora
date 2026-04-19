@@ -13,8 +13,11 @@ de modifier leur profil et d'ajouter de nouveaux vêtements grâce à une détec
 de catégorie par Intelligence Artificielle (TFLite).
 
 <div align="center">
+
 ![Aperçu de l'application main](docs/main.png)
+
 </div>
+
 ---
 
 ## Fonctionnalités réalisées
