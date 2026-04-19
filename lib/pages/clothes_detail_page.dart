@@ -42,13 +42,13 @@ class ClothesDetailPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Full width image with rounded bottom corners
+            // Image full width
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
                 bottom: Radius.circular(32),
               ),
               child: Container(
-                color: const Color(0xFFD4E6D5),
+                color: Colors.white.withValues(alpha: 0.04),
                 child: CachedNetworkImage(
                   imageUrl: vetement.imageUrl,
                   width: double.infinity,
@@ -56,16 +56,18 @@ class ClothesDetailPage extends StatelessWidget {
                   fit: BoxFit.contain,
                   errorWidget: (_, __, ___) => Container(
                     height: 320,
-                    color: const Color(0xFFD4E6D5),
-                    child: const Icon(Icons.checkroom,
-                        size: 80, color: Color(0xFF7A9E7E)),
+                    color: Colors.white.withValues(alpha: 0.04),
+                    child: Icon(
+                      Icons.checkroom,
+                      size: 80,
+                      color: const Color(0xFFD4AF37).withValues(alpha: 0.5),
+                    ),
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 24),
 
-            // Info card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -78,12 +80,12 @@ class ClothesDetailPage extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF2D2D2D),
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 16),
 
-                  // Info chips row
+                  // Info chips
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -107,15 +109,18 @@ class ClothesDetailPage extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24, vertical: 12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD4E6D5),
+                      color: Colors.white.withValues(alpha: 0.06),
                       borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: const Color(0xFFD4AF37).withValues(alpha: 0.4),
+                      ),
                     ),
                     child: Text(
                       "${vetement.prix.toStringAsFixed(2)} €",
                       style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF7A9E7E),
+                        color: Color(0xFFD4AF37),
                       ),
                     ),
                   ),
@@ -159,27 +164,22 @@ class _InfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFD4E6D5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.1),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: const Color(0xFF7A9E7E)),
+          Icon(icon, size: 14, color: const Color(0xFFD4AF37)),
           const SizedBox(width: 4),
           Text(
             label,
             style: const TextStyle(
               fontSize: 12,
-              color: Color(0xFF2D2D2D),
+              color: Colors.white,
               fontWeight: FontWeight.w500,
             ),
           ),

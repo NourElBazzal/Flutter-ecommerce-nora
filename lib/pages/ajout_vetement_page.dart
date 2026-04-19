@@ -114,27 +114,35 @@ class _AjoutVetementPageState extends State<AjoutVetementPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Image picker
+            // Zone image
             GestureDetector(
               onTap: _enDetection ? null : _choisirImage,
               child: Container(
                 width: double.infinity,
                 height: 200,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD4E6D5),
+                  color: Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFF7A9E7E)),
+                  border: Border.all(
+                    color: const Color(0xFFD4AF37).withValues(alpha: 0.3),
+                  ),
                 ),
                 child: _imageBytes == null
-                    ? const Column(
+                    ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add_photo_alternate,
-                              size: 60, color: Color(0xFF7A9E7E)),
-                          SizedBox(height: 8),
+                          Icon(
+                            Icons.add_photo_alternate,
+                            size: 60,
+                            color:
+                                const Color(0xFFD4AF37).withValues(alpha: 0.6),
+                          ),
+                          const SizedBox(height: 8),
                           Text(
                             "Appuyer pour sélectionner une image",
-                            style: TextStyle(color: Color(0xFF7A9E7E)),
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.4),
+                            ),
                           ),
                         ],
                       )
@@ -146,32 +154,43 @@ class _AjoutVetementPageState extends State<AjoutVetementPage> {
             ),
             const SizedBox(height: 16),
 
-            // Catégorie détectée
+            // Catégorie IA
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFD4E6D5)),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.08),
+                ),
               ),
               child: _enDetection
-                  ? const Row(
+                  ? Row(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Color(0xFF7A9E7E)),
+                            strokeWidth: 2,
+                            color: Color(0xFFD4AF37),
+                          ),
                         ),
-                        SizedBox(width: 12),
-                        Text("Analyse IA en cours..."),
+                        const SizedBox(width: 12),
+                        Text(
+                          "Analyse IA en cours...",
+                          style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.7)),
+                        ),
                       ],
                     )
                   : Row(
                       children: [
-                        const Icon(Icons.auto_awesome,
-                            color: Color(0xFF7A9E7E), size: 20),
+                        Icon(
+                          Icons.auto_awesome,
+                          color: const Color(0xFFD4AF37).withValues(alpha: 0.8),
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -180,8 +199,8 @@ class _AjoutVetementPageState extends State<AjoutVetementPage> {
                                 : "IA a détecté : ${_categorieDetectee!.libelle}",
                             style: TextStyle(
                               color: _categorieDetectee == null
-                                  ? Colors.grey
-                                  : const Color(0xFF2D2D2D),
+                                  ? Colors.white.withValues(alpha: 0.4)
+                                  : Colors.white,
                               fontWeight: _categorieDetectee == null
                                   ? FontWeight.normal
                                   : FontWeight.bold,
@@ -193,13 +212,18 @@ class _AjoutVetementPageState extends State<AjoutVetementPage> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFD4E6D5),
+                              color: const Color(0xFFD4AF37)
+                                  .withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: const Color(0xFFD4AF37)
+                                    .withValues(alpha: 0.4),
+                              ),
                             ),
                             child: Text(
                               _categorieDetectee!.libelle,
                               style: const TextStyle(
-                                color: Color(0xFF7A9E7E),
+                                color: Color(0xFFD4AF37),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
@@ -212,21 +236,25 @@ class _AjoutVetementPageState extends State<AjoutVetementPage> {
 
             TextField(
               controller: _titreCtrl,
+              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(labelText: "Titre"),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _tailleCtrl,
+              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(labelText: "Taille"),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _marqueCtrl,
+              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(labelText: "Marque"),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _prixCtrl,
+              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(labelText: "Prix (€)"),
               keyboardType: TextInputType.number,
               inputFormatters: [
@@ -245,7 +273,8 @@ class _AjoutVetementPageState extends State<AjoutVetementPage> {
                         height: 18,
                         width: 18,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white))
+                            strokeWidth: 2, color: Colors.black),
+                      )
                     : const Text("Valider"),
               ),
             ),

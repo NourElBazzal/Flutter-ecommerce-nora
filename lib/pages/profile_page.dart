@@ -58,14 +58,18 @@ class _ProfilePageState extends State<ProfilePage> {
         'ville': _cityCtrl.text,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Profil sauvegardé ✓")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Profil sauvegardé ✓")),
+        );
+      }
     } catch (e) {
       debugPrint("Erreur sauvegarde profil: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Erreur lors de la sauvegarde.")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Erreur lors de la sauvegarde.")),
+        );
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -74,8 +78,62 @@ class _ProfilePageState extends State<ProfilePage> {
   void _logout() {
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => const LoginPage()),
+      PageRouteBuilder(
+        pageBuilder: (_, animation, __) => const LoginPage(),
+        transitionsBuilder: (_, animation, __, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        transitionDuration: const Duration(milliseconds: 400),
+      ),
       (route) => false,
+    );
+  }
+
+  Widget _buildField({
+    required TextEditingController controller,
+    required String label,
+    bool readOnly = false,
+    bool obscure = false,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? formatters,
+    String? hint,
+  }) {
+    return TextField(
+      controller: controller,
+      readOnly: readOnly,
+      obscureText: obscure,
+      keyboardType: keyboardType,
+      inputFormatters: formatters,
+      style: TextStyle(
+        color: readOnly ? Colors.white.withValues(alpha: 0.4) : Colors.white,
+      ),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        filled: true,
+        fillColor: readOnly
+            ? Colors.white.withValues(alpha: 0.02)
+            : Colors.white.withValues(alpha: 0.05),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: readOnly
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.white.withValues(alpha: 0.1),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: Color(0xFFD4AF37), width: 1.5),
+        ),
+        labelStyle: TextStyle(
+          color: readOnly
+              ? Colors.white.withValues(alpha: 0.3)
+              : Colors.white.withValues(alpha: 0.5),
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      ),
     );
   }
 
@@ -85,60 +143,54 @@ class _ProfilePageState extends State<ProfilePage> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // Login (readonly)
-          TextField(
+          // Login readonly
+          _buildField(
             controller: _loginCtrl,
+            label: "Login",
             readOnly: true,
-            decoration: const InputDecoration(
-              labelText: "Login",
-              filled: true,
-              fillColor: Color(0xFFEEEEEE),
-            ),
           ),
           const SizedBox(height: 12),
 
-          // Password (offusqué)
-          TextField(
+          // Password
+          _buildField(
             controller: _passCtrl,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: "Password"),
+            label: "Password",
+            obscure: true,
           ),
           const SizedBox(height: 12),
 
           // Anniversaire
-          TextField(
+          _buildField(
             controller: _birthdayCtrl,
-            decoration: const InputDecoration(
-              labelText: "Anniversaire",
-              hintText: "YYYY-MM-DD",
-            ),
+            label: "Anniversaire",
+            hint: "YYYY-MM-DD",
           ),
           const SizedBox(height: 12),
 
           // Adresse
-          TextField(
+          _buildField(
             controller: _addressCtrl,
-            decoration: const InputDecoration(labelText: "Adresse"),
+            label: "Adresse",
           ),
           const SizedBox(height: 12),
 
-          // Code postal (numérique uniquement)
-          TextField(
+          // Code postal
+          _buildField(
             controller: _postalCtrl,
-            decoration: const InputDecoration(labelText: "Code Postal"),
+            label: "Code Postal",
             keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            formatters: [FilteringTextInputFormatter.digitsOnly],
           ),
           const SizedBox(height: 12),
 
           // Ville
-          TextField(
+          _buildField(
             controller: _cityCtrl,
-            decoration: const InputDecoration(labelText: "Ville"),
+            label: "Ville",
           ),
           const SizedBox(height: 24),
 
-          // Bouton Clothes
+          // Bouton Ajouter vêtement
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
@@ -161,7 +213,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   ? const SizedBox(
                       height: 18,
                       width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.black),
                     )
                   : const Text("Valider"),
             ),
@@ -173,10 +226,14 @@ class _ProfilePageState extends State<ProfilePage> {
             width: double.infinity,
             child: OutlinedButton(
               onPressed: _logout,
-              style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.redAccent,
+                side: const BorderSide(color: Colors.redAccent),
+              ),
               child: const Text("Se déconnecter"),
             ),
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );

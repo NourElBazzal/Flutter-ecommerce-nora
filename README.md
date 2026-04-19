@@ -83,10 +83,10 @@ de vêtements réparties en 4 catégories :
 
 | Catégorie | Nombre d'images |
 | --------- | --------------- |
-| Pantalon  | 40 images      |
-| Short     | 40 images      |
-| Haut      | 40 images      |
-| Veste     | 40 images      |
+| Pantalon  | 40 images       |
+| Short     | 40 images       |
+| Haut      | 40 images       |
+| Veste     | 40 images       |
 
 Les images d'entraînement sont disponibles dans `assets/images/training_ia/`
 
@@ -95,9 +95,11 @@ Les images d'entraînement sont disponibles dans `assets/images/training_ia/`
 ## Performance du modèle IA
 
 ### Accuracy par classe
+
 ![Accuracy per class](docs/accuracy_per_class.png)
 
 ### Confusion Matrix
+
 ![Confusion Matrix](docs/confusion_matrix.png)
 
 ---
@@ -123,11 +125,31 @@ cd Flutter-ecommerce-nora
 flutter pub get
 ```
 
-### Lancer l'application
+---
+
+## ⚠️ Important — Comment lancer le projet
+
+Ce projet est optimisé pour une **vue mobile sur navigateur**.
+
+### Lancer en mode mobile :
+
+1. Lancer l'application :
 
 ```bash
 flutter run -d chrome
 ```
+
+2. Une fois Chrome ouvert :
+   - Appuie sur **F12** pour ouvrir les DevTools
+   - Clique sur l'icône **"Toggle device toolbar"** (ou **Ctrl + Shift + M**)
+   - Choisis un device mobile comme **iPhone 12 Pro** ou **Galaxy S20**
+   - Rafraîchis la page (**F5**)
+
+L'application est conçue pour un écran de **390px de large** environ.
+
+### ⚠️ Ne pas utiliser en plein écran desktop
+
+Le design est optimisé pour mobile — en plein écran desktop les grids et cards peuvent sembler déformés.
 
 ---
 

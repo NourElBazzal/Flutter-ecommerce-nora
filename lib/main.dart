@@ -21,32 +21,31 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF7A9E7E),
-          brightness: Brightness.light,
-        ).copyWith(
-          primary: const Color(0xFF7A9E7E),
-          secondary: const Color(0xFFD4E6D5),
-          surface: const Color(0xFFF8FAF8),
-          onPrimary: Colors.white,
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF0A0A0A),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFFD4AF37),
+          secondary: Color(0xFF7A9E7E),
+          surface: Color(0xFF111111),
+          onPrimary: Colors.black,
+          onSurface: Colors.white,
         ),
-        scaffoldBackgroundColor: const Color(0xFFF8FAF8),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
           titleTextStyle: TextStyle(
-            color: Color(0xFF2D2D2D),
-            fontSize: 22,
+            color: Color(0xFFD4AF37),
+            fontSize: 20,
             fontWeight: FontWeight.bold,
-            letterSpacing: 2,
+            letterSpacing: 4,
           ),
-          iconTheme: IconThemeData(color: Color(0xFF2D2D2D)),
+          iconTheme: IconThemeData(color: Color(0xFFD4AF37)),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF7A9E7E),
-            foregroundColor: Colors.white,
+            backgroundColor: const Color(0xFFD4AF37),
+            foregroundColor: Colors.black,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
@@ -54,14 +53,14 @@ class MyApp extends StatelessWidget {
             textStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              letterSpacing: 1,
+              letterSpacing: 2,
             ),
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-            foregroundColor: const Color(0xFF7A9E7E),
-            side: const BorderSide(color: Color(0xFF7A9E7E)),
+            foregroundColor: const Color(0xFFD4AF37),
+            side: const BorderSide(color: Color(0xFFD4AF37)),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
@@ -70,38 +69,46 @@ class MyApp extends StatelessWidget {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Colors.white.withOpacity(0.05),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Color(0xFFD4E6D5)),
+            borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Color(0xFF7A9E7E), width: 2),
+            borderSide: const BorderSide(color: Color(0xFFD4AF37), width: 1.5),
           ),
-          labelStyle: const TextStyle(color: Color(0xFF9E9E9E)),
+          labelStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+          hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         ),
         cardTheme: CardThemeData(
-          color: Colors.white,
+          color: Colors.white.withOpacity(0.05),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
         ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Colors.white,
-          selectedItemColor: Color(0xFF7A9E7E),
-          unselectedItemColor: Color(0xFFBDBDBD),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: const Color(0xFF111111),
+          selectedItemColor: const Color(0xFFD4AF37),
+          unselectedItemColor: Colors.white.withOpacity(0.3),
           showSelectedLabels: true,
           showUnselectedLabels: true,
-          elevation: 20,
           type: BottomNavigationBarType.fixed,
+        ),
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: const Color(0xFF1A1A1A),
+          contentTextStyle: const TextStyle(color: Colors.white),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          behavior: SnackBarBehavior.floating,
         ),
       ),
       home: const LoginPage(),
