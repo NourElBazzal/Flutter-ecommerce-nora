@@ -12,6 +12,8 @@ Elle permet aux utilisateurs de parcourir un catalogue de vêtements, de gérer 
 de modifier leur profil et d'ajouter de nouveaux vêtements grâce à une détection automatique  
 de catégorie par Intelligence Artificielle (TFLite).
 
+![Aperçu de l'application main](docs/main.png)
+
 ---
 
 ## Fonctionnalités réalisées
@@ -41,6 +43,22 @@ Le modèle TFLite est chargé dans le navigateur via **TensorFlow.js**
 et prédit automatiquement la catégorie d'un vêtement à partir d'une photo.
 
 Images utilisées pour l'entraînement : disponibles dans `assets/images/training_ia/`
+
+---
+
+## Aperçu de l'application
+
+<div align="center">
+
+| Login                                       | Découvrir                                   | Détail                                   |
+| ------------------------------------------- | ------------------------------------------- | ---------------------------------------- |
+| <img src="docs/connexion.png" width="200"/> | <img src="docs/decouvrir.png" width="200"/> | <img src="docs/detail.png" width="200"/> |
+
+| Panier                                   | Profil                                    | Ajouter (IA)                             |
+| ---------------------------------------- | ----------------------------------------- | ---------------------------------------- |
+| <img src="docs/panier.png" width="200"/> | <img src="docs/profile.png" width="200"/> | <img src="docs/add_ai.png" width="200"/> |
+
+</div>
 
 ---
 
