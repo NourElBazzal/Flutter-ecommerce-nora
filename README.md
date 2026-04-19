@@ -76,19 +76,29 @@ flutter run -d chrome
 
 ---
 
-## 🤖 Images utilisées pour la classification IA
+## Images utilisées pour la classification IA
 
 Le modèle a été entraîné sur **Google Teachable Machine** avec des photos  
 de vêtements réparties en 4 catégories :
 
 | Catégorie | Nombre d'images |
 | --------- | --------------- |
-| Pantalon  | ~15 images      |
-| Short     | ~15 images      |
-| Haut      | ~15 images      |
-| Veste     | ~15 images      |
+| Pantalon  | 40 images      |
+| Short     | 40 images      |
+| Haut      | 40 images      |
+| Veste     | 40 images      |
 
 Les images d'entraînement sont disponibles dans `assets/images/training_ia/`
+
+---
+
+## Performance du modèle IA
+
+### Accuracy par classe
+![Accuracy per class](docs/accuracy_per_class.png)
+
+### Confusion Matrix
+![Confusion Matrix](docs/confusion_matrix.png)
 
 ---
 
