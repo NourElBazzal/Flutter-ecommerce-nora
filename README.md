@@ -20,6 +20,24 @@ de catégorie par Intelligence Artificielle (TFLite).
 
 ---
 
+## Application en ligne
+
+👉 **[Accéder à l'application](https://ecommerce-project-2e1b6.web.app)**
+
+### Sur ordinateur (Chrome/Edge)
+
+1. Ouvre le lien dans Chrome ou Edge
+2. Appuie sur **F12** pour ouvrir les DevTools
+3. Clique sur l'icône 📱 **"Toggle device toolbar"** (ou **Ctrl + Shift + M**)
+4. Choisis **iPhone 12 Pro** ou **Galaxy S20**
+5. Rafraîchis la page (**F5**)
+
+### Sur téléphone
+
+Ouvre simplement le lien directement dans ton navigateur mobile - l'application est optimisée pour mobile et fonctionne nativement sur iOS et Android !
+
+---
+
 ## Fonctionnalités réalisées
 
 ### MVP
@@ -35,7 +53,7 @@ de catégorie par Intelligence Artificielle (TFLite).
 
 ## Intelligence Artificielle
 
-Le modèle de détection de catégorie a été entraîné avec **Google Teachable Machine**  
+Le modèle de détection de catégorie a été entraîné avec **Google Teachable Machine**
 sur des images de vêtements réparties en 4 catégories :
 
 - 👖 Pantalon
@@ -43,10 +61,29 @@ sur des images de vêtements réparties en 4 catégories :
 - 👕 Haut
 - 🧥 Veste
 
-Le modèle TFLite est chargé dans le navigateur via **TensorFlow.js**  
+Le modèle TFLite est chargé dans le navigateur via **TensorFlow.js**
 et prédit automatiquement la catégorie d'un vêtement à partir d'une photo.
 
-Images utilisées pour l'entraînement : disponibles dans `assets/images/training_ia/`
+| Catégorie | Nombre d'images |
+| --------- | --------------- |
+| Pantalon  | 40 images       |
+| Short     | 40 images       |
+| Haut      | 40 images       |
+| Veste     | 40 images       |
+
+Les images d'entraînement sont disponibles dans `assets/images/training_model_images/`
+
+---
+
+## Performance du modèle IA
+
+<div align="center">
+
+| Accuracy par classe                                  | Confusion Matrix                                   |
+| ---------------------------------------------------- | -------------------------------------------------- |
+| <img src="docs/accuracy_per_class.png" width="400"/> | <img src="docs/confusion_matrix.png" width="400"/> |
+
+</div>
 
 ---
 
@@ -79,50 +116,10 @@ Images utilisées pour l'entraînement : disponibles dans `assets/images/trainin
 
 - **Flutter** (Web)
 - **Firebase Firestore** - base de données
-- **Firebase Storage** - stockage des images
+- **Firebase Hosting** - hébergement de l'application
 - **TensorFlow Lite** - modèle IA de classification
 - **Google Teachable Machine** - entraînement du modèle
 - **Cached Network Image** - affichage optimisé des images
-
----
-
-## Device utilisé
-
-Ce projet a été développé et testé sur **Google Chrome** (Flutter Web).
-
-⚠️ Lancer obligatoirement avec Chrome ou Edge :
-
-```bash
-flutter run -d chrome
-```
-
----
-
-## Images utilisées pour la classification IA
-
-Le modèle a été entraîné sur **Google Teachable Machine** avec des photos  
-de vêtements réparties en 4 catégories :
-
-| Catégorie | Nombre d'images |
-| --------- | --------------- |
-| Pantalon  | 40 images       |
-| Short     | 40 images       |
-| Haut      | 40 images       |
-| Veste     | 40 images       |
-
-Les images d'entraînement sont disponibles dans `assets/images/training_ia/`
-
----
-
-## Performance du modèle IA
-
-<div align="center">
-
-| Accuracy par classe                                  | Confusion Matrix                                   |
-| ---------------------------------------------------- | -------------------------------------------------- |
-| <img src="docs/accuracy_per_class.png" width="400"/> | <img src="docs/confusion_matrix.png" width="400"/> |
-
-</div>
 
 ---
 
@@ -134,44 +131,25 @@ Les images d'entraînement sont disponibles dans `assets/images/training_ia/`
 - Google Chrome ou Microsoft Edge
 - Git
 
-### Cloner le projet
+### Installation
 
 ```bash
 git clone https://github.com/NourElBazzal/Flutter-ecommerce-nora.git
 cd Flutter-ecommerce-nora
-```
-
-### Installer les dépendances
-
-```bash
 flutter pub get
-```
-
----
-
-## ⚠️ Important — Comment lancer le projet
-
-Ce projet est optimisé pour une **vue mobile sur navigateur**.
-
-### Lancer en mode mobile :
-
-1. Lancer l'application :
-
-```bash
 flutter run -d chrome
 ```
 
-2. Une fois Chrome ouvert :
-   - Appuie sur **F12** pour ouvrir les DevTools
-   - Clique sur l'icône **"Toggle device toolbar"** (ou **Ctrl + Shift + M**)
-   - Choisis un device mobile comme **iPhone 12 Pro** ou **Galaxy S20**
-   - Rafraîchis la page (**F5**)
+### ⚠️ Vue mobile obligatoire
 
-L'application est conçue pour un écran de **390px de large** environ.
+Ce projet est optimisé pour une **vue mobile sur navigateur**.
 
-### ⚠️ Ne pas utiliser en plein écran desktop
+1. Une fois Chrome ouvert, appuie sur **F12**
+2. Clique sur l'icône 📱 **"Toggle device toolbar"** (**Ctrl + Shift + M**)
+3. Choisis **iPhone 12 Pro** ou **Galaxy S20**
+4. Rafraîchis la page (**F5**)
 
-Le design est optimisé pour mobile - en plein écran desktop les grids et cards peuvent sembler déformés.
+> Le design est optimisé pour ~390px de large. En plein écran desktop les grids peuvent sembler déformés.
 
 ---
 
@@ -205,7 +183,7 @@ projet_td2/
         Veste/                   — Photos de vestes
       model_unquant.tflite       — Modèle TFLite entraîné
       labels.txt                 — Labels du modèle (4 catégories)
-      logo.png                   — Logo de l'application (fond transparent)
+      logo_transparent.png       — Logo de l'application (fond transparent)
       login_bg.jpg               — Image de fond page de connexion
   docs/
     accuracy_per_class.png       — Screenshot Accuracy par classe du modèle IA
