@@ -205,7 +205,17 @@ projet_td2/
         Veste/                   — Photos de vestes
       model_unquant.tflite       — Modèle TFLite entraîné
       labels.txt                 — Labels du modèle (4 catégories)
-      logo.png                   — Logo de l'application
+      logo.png                   — Logo de l'application (fond transparent)
+      login_bg.jpg               — Image de fond page de connexion
+  docs/
+    accuracy_per_class.png       — Screenshot Accuracy par classe du modèle IA
+    confusion_matrix.png         — Screenshot Confusion Matrix du modèle IA
+    connexion.png                — Screenshot page de connexion
+    decouvrir.png                — Screenshot liste des vêtements
+    detail.png                   — Screenshot détail vêtement
+    panier.png                   — Screenshot panier
+    profile.png                  — Screenshot profil
+    add_ai.png                   — Screenshot ajout avec IA
   web/
     index.html                   — TensorFlow.js + TFLite bridge
   pubspec.yaml                   — Dépendances Flutter
