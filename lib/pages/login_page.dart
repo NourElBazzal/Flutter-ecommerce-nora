@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:math' as math;
 import '../modeles/user.dart';
 import 'home_page.dart';
 
@@ -11,45 +10,42 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   final _loginCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   bool _loading = false;
+  bool _showForm = false;
 
-  late AnimationController _floatController;
-  late AnimationController _shimmerController;
-  late Animation<double> _float1;
-  late Animation<double> _float2;
-  late Animation<double> _shimmer;
+  late AnimationController _slideCtrl;
+  late Animation<Offset> _slideAnim;
+  late Animation<double> _fadeAnim;
 
   @override
   void initState() {
     super.initState();
-    _floatController = AnimationController(
+    _slideCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat(reverse: true);
-
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat();
-
-    _float1 = Tween<double>(begin: -15, end: 15).animate(
-        CurvedAnimation(parent: _floatController, curve: Curves.easeInOut));
-    _float2 = Tween<double>(begin: 10, end: -10).animate(
-        CurvedAnimation(parent: _floatController, curve: Curves.easeInOut));
-    _shimmer = Tween<double>(begin: -1, end: 2).animate(
-        CurvedAnimation(parent: _shimmerController, curve: Curves.linear));
+      duration: const Duration(milliseconds: 600),
+    );
+    _slideAnim = Tween<Offset>(
+      begin: const Offset(0, 1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _slideCtrl, curve: Curves.easeOutCubic));
+    _fadeAnim = CurvedAnimation(parent: _slideCtrl, curve: Curves.easeIn);
   }
 
   @override
   void dispose() {
-    _floatController.dispose();
-    _shimmerController.dispose();
+    _slideCtrl.dispose();
     _loginCtrl.dispose();
     _passCtrl.dispose();
     super.dispose();
+  }
+
+  void _openForm() {
+    setState(() => _showForm = true);
+    _slideCtrl.forward();
   }
 
   Future<void> _signIn() async {
@@ -57,9 +53,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
     final password = _passCtrl.text;
 
     if (login.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Veuillez remplir tous les champs.")),
-      );
+      _showSnack("Veuillez remplir tous les champs.");
       return;
     }
 
@@ -73,219 +67,170 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           .get();
 
       if (q.docs.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Identifiants incorrects.")),
-          );
-        }
+        _showSnack("Identifiants incorrects.");
         return;
       }
 
       final doc = q.docs.first;
       final data = doc.data();
+
       if ((data['motDePasse'] ?? '') != password) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Identifiants incorrects.")),
-          );
-        }
+        _showSnack("Identifiants incorrects.");
         return;
       }
 
       final user = UserModel.fromFirestore(doc.id, data);
       if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
           pageBuilder: (_, animation, __) => HomePage(user: user),
-          transitionsBuilder: (_, animation, __, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-          transitionDuration: const Duration(milliseconds: 600),
+          transitionsBuilder: (_, animation, __, child) =>
+              FadeTransition(opacity: animation, child: child),
+          transitionDuration: const Duration(milliseconds: 500),
         ),
       );
     } catch (e) {
       debugPrint("Login error: $e");
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Erreur Firebase.")),
-        );
-      }
+      _showSnack("Erreur Firebase.");
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
+  void _showSnack(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
+        fit: StackFit.expand,
         children: [
-          // Background gradient
+          // Background image
+          Image.asset(
+            'assets/images/login_bg.jpg',
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Container(
+              color: const Color(0xFF1A1A1A),
+            ),
+          ),
+
+          // Dark gradient overlay
           Container(
             decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(-0.5, -0.5),
-                radius: 1.5,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: [0.0, 0.5, 0.8, 1.0],
                 colors: [
-                  Color(0xFF1A1500),
-                  Color(0xFF0A0A0A),
+                  Color(0x00000000),
+                  Color(0x11000000),
+                  Color(0xBB000000),
                   Color(0xFF000000),
                 ],
               ),
             ),
           ),
 
-          // Floating orbs
-          AnimatedBuilder(
-            animation: _floatController,
-            builder: (_, __) => Stack(
-              children: [
-                Positioned(
-                  top: 100 + _float1.value,
-                  right: 50,
-                  child: _GlowOrb(
-                      size: 200,
-                      color: const Color(0xFFD4AF37).withOpacity(0.06)),
+          // Top logo
+          // Remplace le Positioned du logo par :
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        blurRadius: 20,
+                        spreadRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    height: 80,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.centerLeft,
+                  ),
                 ),
-                Positioned(
-                  bottom: 150 + _float2.value,
-                  left: 30,
-                  child: _GlowOrb(
-                      size: 150,
-                      color: const Color(0xFF7A9E7E).withOpacity(0.06)),
-                ),
-                Positioned(
-                  top: 300 + _float2.value,
-                  left: 100,
-                  child: _GlowOrb(
-                      size: 100,
-                      color: const Color(0xFFD4AF37).withOpacity(0.04)),
-                ),
-              ],
+              ),
             ),
           ),
 
-          // Main content
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Logo with glow
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFD4AF37).withOpacity(0.3),
-                            blurRadius: 30,
-                            spreadRadius: 5,
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(28),
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+          // Bottom content
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: !_showForm
+                ? _buildSplashContent()
+                : SlideTransition(
+                    position: _slideAnim,
+                    child: FadeTransition(
+                      opacity: _fadeAnim,
+                      child: _buildFormContent(),
                     ),
-                    const SizedBox(height: 28),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
 
-                    // App name with shimmer
-                    AnimatedBuilder(
-                      animation: _shimmer,
-                      builder: (_, __) => ShaderMask(
-                        shaderCallback: (bounds) => LinearGradient(
-                          colors: const [
-                            Color(0xFFD4AF37),
-                            Color(0xFFFFF5CC),
-                            Color(0xFFD4AF37),
-                          ],
-                          stops: [
-                            (_shimmer.value - 0.3).clamp(0.0, 1.0),
-                            _shimmer.value.clamp(0.0, 1.0),
-                            (_shimmer.value + 0.3).clamp(0.0, 1.0),
-                          ],
-                        ).createShader(bounds),
-                        child: const Text(
-                          'NORA',
-                          style: TextStyle(
-                            fontSize: 42,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 10,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    Text(
-                      'Votre destination de mode',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.white.withOpacity(0.4),
-                        letterSpacing: 2,
-                      ),
-                    ),
-                    const SizedBox(height: 52),
-
-                    // Glass card
-                    Container(
-                      padding: const EdgeInsets.all(28),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.04),
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.08),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          TextField(
-                            controller: _loginCtrl,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              labelText: "Utilisateur",
-                              prefixIcon: Icon(Icons.person_outline,
-                                  color:
-                                      const Color(0xFFD4AF37).withOpacity(0.7),
-                                  size: 20),
-                            ),
-                            textInputAction: TextInputAction.next,
-                          ),
-                          const SizedBox(height: 16),
-                          TextField(
-                            controller: _passCtrl,
-                            obscureText: true,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              labelText: "Mot de passe",
-                              prefixIcon: Icon(Icons.lock_outline,
-                                  color:
-                                      const Color(0xFFD4AF37).withOpacity(0.7),
-                                  size: 20),
-                            ),
-                            onSubmitted: (_) => _signIn(),
-                          ),
-                          const SizedBox(height: 28),
-
-                          // Shimmer button
-                          _ShimmerButton(
-                            onTap: _loading ? null : _signIn,
-                            loading: _loading,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+  Widget _buildSplashContent() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(28, 0, 28, 50),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Découvrez\nvotre style',
+            style: TextStyle(
+              fontSize: 40,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              height: 1.2,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Explorez votre destination de mode',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white.withValues(alpha: 0.6),
+            ),
+          ),
+          const SizedBox(height: 36),
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: ElevatedButton(
+              onPressed: _openForm,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF1A1A1A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: const Text(
+                "Commencer",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
                 ),
               ),
             ),
@@ -294,80 +239,121 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       ),
     );
   }
-}
 
-// Glow orb widget
-class _GlowOrb extends StatelessWidget {
-  final double size;
-  final Color color;
-  const _GlowOrb({required this.size, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildFormContent() {
     return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-        boxShadow: [
-          BoxShadow(color: color, blurRadius: 60, spreadRadius: 20),
-        ],
+      padding: const EdgeInsets.fromLTRB(24, 28, 24, 40),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-    );
-  }
-}
-
-// Shimmer button widget
-class _ShimmerButton extends StatelessWidget {
-  final VoidCallback? onTap;
-  final bool loading;
-  const _ShimmerButton({required this.onTap, required this.loading});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        height: 54,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [
-              Color(0xFFB8960C),
-              Color(0xFFD4AF37),
-              Color(0xFFE8C84A),
-              Color(0xFFD4AF37),
-              Color(0xFFB8960C),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFFD4AF37).withOpacity(0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle bar
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE0E0E0),
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ],
-        ),
-        child: Center(
-          child: loading
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                      strokeWidth: 2, color: Colors.black),
-                )
-              : const Text(
-                  "SE CONNECTER",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    letterSpacing: 3,
-                  ),
+          ),
+          const SizedBox(height: 24),
+
+          const Text(
+            'Connexion',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A1A1A),
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Entrez vos identifiants pour continuer',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade500,
+            ),
+          ),
+          const SizedBox(height: 28),
+
+          TextField(
+            controller: _loginCtrl,
+            textInputAction: TextInputAction.next,
+            style: const TextStyle(color: Color(0xFF1A1A1A)),
+            decoration: InputDecoration(
+              hintText: "Identifiant",
+              prefixIcon: Icon(Icons.person_outline,
+                  color: Colors.grey.shade400, size: 20),
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          TextField(
+            controller: _passCtrl,
+            obscureText: true,
+            onSubmitted: (_) => _signIn(),
+            style: const TextStyle(color: Color(0xFF1A1A1A)),
+            decoration: InputDecoration(
+              hintText: "Mot de passe",
+              prefixIcon: Icon(Icons.lock_outline,
+                  color: Colors.grey.shade400, size: 20),
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: _loading ? null : _signIn,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF1A1A1A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
                 ),
-        ),
+              ),
+              child: _loading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Text(
+                      "Se connecter",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          Center(
+            child: GestureDetector(
+              onTap: () {
+                _slideCtrl.reverse();
+                setState(() => _showForm = false);
+              },
+              child: Text(
+                "Retour",
+                style: TextStyle(
+                  color: Colors.grey.shade400,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

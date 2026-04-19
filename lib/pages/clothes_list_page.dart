@@ -15,7 +15,17 @@ class ClothesListPage extends StatefulWidget {
 
 class _ClothesListPageState extends State<ClothesListPage> {
   List<VetementModel> _vetements = [];
+  List<VetementModel> _filtered = [];
   bool _loading = true;
+  String _selectedCategory = 'Tous';
+
+  final List<String> _categories = [
+    'Tous',
+    'Haut',
+    'Pantalon',
+    'Short',
+    'Veste'
+  ];
 
   @override
   void initState() {
@@ -27,10 +37,12 @@ class _ClothesListPageState extends State<ClothesListPage> {
     try {
       final snapshot =
           await FirebaseFirestore.instance.collection('clothes').get();
+      final list = snapshot.docs
+          .map((doc) => VetementModel.fromFirestore(doc.id, doc.data()))
+          .toList();
       setState(() {
-        _vetements = snapshot.docs
-            .map((doc) => VetementModel.fromFirestore(doc.id, doc.data()))
-            .toList();
+        _vetements = list;
+        _filtered = list;
         _loading = false;
       });
     } catch (e) {
@@ -39,87 +51,181 @@ class _ClothesListPageState extends State<ClothesListPage> {
     }
   }
 
+  void _filterByCategory(String category) {
+    setState(() {
+      _selectedCategory = category;
+      if (category == 'Tous') {
+        _filtered = _vetements;
+      } else {
+        _filtered = _vetements
+            .where((v) =>
+                v.categorie.toLowerCase().contains(category.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_loading) {
       return const Center(
-        child: CircularProgressIndicator(color: Color(0xFFD4AF37)),
+        child: CircularProgressIndicator(color: Color(0xFF1A1A1A)),
       );
     }
 
-    if (_vetements.isEmpty) {
-      return Center(
-        child: Text("Aucun vêtement disponible.",
-            style: TextStyle(color: Colors.white.withOpacity(0.5))),
-      );
-    }
-
-    return GridView.builder(
-      padding: const EdgeInsets.all(16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.75,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-      ),
-      itemCount: _vetements.length,
-      itemBuilder: (context, index) {
-        final v = _vetements[index];
-        return _AnimatedCard(
-          vetement: v,
-          onTap: () => Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (_, animation, __) =>
-                  ClothesDetailPage(vetement: v, user: widget.user),
-              transitionsBuilder: (_, animation, __, child) {
-                return SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(1, 0),
-                    end: Offset.zero,
-                  ).animate(CurvedAnimation(
-                      parent: animation, curve: Curves.easeOutCubic)),
-                  child: child,
-                );
-              },
-              transitionDuration: const Duration(milliseconds: 400),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Découvrir',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1A1A1A),
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Trouvez votre meilleure tenue',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade500,
+                ),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+        const SizedBox(height: 16),
+
+        // Category filter chips
+        SizedBox(
+          height: 40,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            itemCount: _categories.length,
+            itemBuilder: (context, index) {
+              final cat = _categories[index];
+              final isSelected = cat == _selectedCategory;
+              return GestureDetector(
+                onTap: () => _filterByCategory(cat),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  margin: const EdgeInsets.only(right: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected ? const Color(0xFF1A1A1A) : Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isSelected
+                          ? const Color(0xFF1A1A1A)
+                          : const Color(0xFFE0E0E0),
+                    ),
+                  ),
+                  child: Text(
+                    cat,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color:
+                          isSelected ? Colors.white : const Color(0xFF888888),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Grid
+        Expanded(
+          child: _filtered.isEmpty
+              ? Center(
+                  child: Text(
+                    "Aucun vêtement dans cette catégorie.",
+                    style: TextStyle(color: Colors.grey.shade400),
+                  ),
+                )
+              : GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.72,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemCount: _filtered.length,
+                  itemBuilder: (context, index) {
+                    final v = _filtered[index];
+                    return _ClothingCard(
+                      vetement: v,
+                      onTap: () => Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (_, animation, __) =>
+                              ClothesDetailPage(vetement: v, user: widget.user),
+                          transitionsBuilder: (_, animation, __, child) {
+                            return SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(1, 0),
+                                end: Offset.zero,
+                              ).animate(CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeOutCubic)),
+                              child: child,
+                            );
+                          },
+                          transitionDuration: const Duration(milliseconds: 350),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 }
 
-class _AnimatedCard extends StatefulWidget {
+class _ClothingCard extends StatefulWidget {
   final VetementModel vetement;
   final VoidCallback onTap;
-  const _AnimatedCard({required this.vetement, required this.onTap});
+  const _ClothingCard({required this.vetement, required this.onTap});
 
   @override
-  State<_AnimatedCard> createState() => _AnimatedCardState();
+  State<_ClothingCard> createState() => _ClothingCardState();
 }
 
-class _AnimatedCardState extends State<_AnimatedCard>
+class _ClothingCardState extends State<_ClothingCard>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  late AnimationController _ctrl;
   late Animation<double> _scale;
+  bool _liked = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _ctrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 120),
     );
-    _scale = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    _scale = Tween<double>(begin: 1.0, end: 0.96).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
     );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _ctrl.dispose();
     super.dispose();
   }
 
@@ -127,32 +233,22 @@ class _AnimatedCardState extends State<_AnimatedCard>
   Widget build(BuildContext context) {
     final v = widget.vetement;
     return GestureDetector(
-      onTapDown: (_) => _controller.forward(),
+      onTapDown: (_) => _ctrl.forward(),
       onTapUp: (_) {
-        _controller.reverse();
+        _ctrl.reverse();
         widget.onTap();
       },
-      onTapCancel: () => _controller.reverse(),
+      onTapCancel: () => _ctrl.reverse(),
       child: ScaleTransition(
         scale: _scale,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.08),
-            ),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withOpacity(0.07),
-                Colors.white.withOpacity(0.03),
-              ],
-            ),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 10,
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
             ],
@@ -160,58 +256,95 @@ class _AnimatedCardState extends State<_AnimatedCard>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image
+              // Image with heart
               Expanded(
                 flex: 4,
-                child: ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(20)),
-                  child: CachedNetworkImage(
-                    imageUrl: v.imageUrl,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => Container(
-                      color: Colors.white.withOpacity(0.05),
-                      child: Icon(Icons.checkroom,
-                          size: 50,
-                          color: const Color(0xFFD4AF37).withOpacity(0.5)),
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(16)),
+                      child: CachedNetworkImage(
+                        imageUrl: v.imageUrl,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => Container(
+                          color: const Color(0xFFF5F5F5),
+                          child: const Icon(Icons.checkroom,
+                              size: 50, color: Color(0xFFDDDDDD)),
+                        ),
+                      ),
                     ),
-                  ),
+                    // Heart button
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: () => setState(() => _liked = !_liked),
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.1),
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            _liked ? Icons.favorite : Icons.favorite_border,
+                            size: 16,
+                            color:
+                                _liked ? Colors.red : const Color(0xFFBBBBBB),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
               // Info
-              Expanded(
-                flex: 1,
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          v.titre,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      v.titre,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: Color(0xFF1A1A1A),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          v.categorie,
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                            color: Colors.white,
+                            fontSize: 11,
+                            color: Color(0xFF888888),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "${v.prix.toStringAsFixed(2)}€",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          color: Color(0xFFD4AF37),
+                        Text(
+                          "${v.prix.toStringAsFixed(2)}€",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: Color(0xFF1A1A1A),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],

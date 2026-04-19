@@ -57,14 +57,13 @@ class _ProfilePageState extends State<ProfilePage> {
         'codePostal': _postalCtrl.text,
         'ville': _cityCtrl.text,
       });
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Profil sauvegardé ✓")),
         );
       }
     } catch (e) {
-      debugPrint("Erreur sauvegarde profil: $e");
+      debugPrint("Erreur: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Erreur lors de la sauvegarde.")),
@@ -80,9 +79,8 @@ class _ProfilePageState extends State<ProfilePage> {
       context,
       PageRouteBuilder(
         pageBuilder: (_, animation, __) => const LoginPage(),
-        transitionsBuilder: (_, animation, __, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
+        transitionsBuilder: (_, animation, __, child) =>
+            FadeTransition(opacity: animation, child: child),
         transitionDuration: const Duration(milliseconds: 400),
       ),
       (route) => false,
@@ -98,142 +96,204 @@ class _ProfilePageState extends State<ProfilePage> {
     List<TextInputFormatter>? formatters,
     String? hint,
   }) {
-    return TextField(
-      controller: controller,
-      readOnly: readOnly,
-      obscureText: obscure,
-      keyboardType: keyboardType,
-      inputFormatters: formatters,
-      style: TextStyle(
-        color: readOnly ? Colors.white.withValues(alpha: 0.4) : Colors.white,
-      ),
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        filled: true,
-        fillColor: readOnly
-            ? Colors.white.withValues(alpha: 0.02)
-            : Colors.white.withValues(alpha: 0.05),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: readOnly
-                ? Colors.white.withValues(alpha: 0.05)
-                : Colors.white.withValues(alpha: 0.1),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1A1A1A),
+            letterSpacing: 0.3,
           ),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFFD4AF37), width: 1.5),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          readOnly: readOnly,
+          obscureText: obscure,
+          keyboardType: keyboardType,
+          inputFormatters: formatters,
+          style: TextStyle(
+            color: readOnly ? const Color(0xFFAAAAAA) : const Color(0xFF1A1A1A),
+            fontSize: 15,
+          ),
+          decoration: InputDecoration(
+            hintText: hint,
+            filled: true,
+            fillColor:
+                readOnly ? const Color(0xFFF8F8F8) : const Color(0xFFF5F5F5),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFE8E8E8)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide:
+                  const BorderSide(color: Color(0xFF1A1A1A), width: 1.5),
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
         ),
-        labelStyle: TextStyle(
-          color: readOnly
-              ? Colors.white.withValues(alpha: 0.3)
-              : Colors.white.withValues(alpha: 0.5),
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Login readonly
-          _buildField(
-            controller: _loginCtrl,
-            label: "Login",
-            readOnly: true,
-          ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
-          // Password
-          _buildField(
-            controller: _passCtrl,
-            label: "Password",
-            obscure: true,
+          // Avatar + name
+          Center(
+            child: Column(
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A1A1A),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      widget.user.utilisateur.substring(0, 1).toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  widget.user.utilisateur,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1A1A1A),
+                  ),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 32),
 
-          // Anniversaire
+          // Divider
+          const Divider(color: Color(0xFFF0F0F0)),
+          const SizedBox(height: 24),
+
+          // Fields
           _buildField(
-            controller: _birthdayCtrl,
-            label: "Anniversaire",
-            hint: "YYYY-MM-DD",
-          ),
-          const SizedBox(height: 12),
-
-          // Adresse
+              controller: _loginCtrl, label: "Identifiant", readOnly: true),
+          const SizedBox(height: 16),
           _buildField(
-            controller: _addressCtrl,
-            label: "Adresse",
-          ),
-          const SizedBox(height: 12),
-
-          // Code postal
+              controller: _passCtrl, label: "Mot De Passe", obscure: true),
+          const SizedBox(height: 16),
+          _buildField(
+              controller: _birthdayCtrl,
+              label: "Anniversaire",
+              hint: "YYYY-MM-DD"),
+          const SizedBox(height: 16),
+          _buildField(controller: _addressCtrl, label: "Adresse"),
+          const SizedBox(height: 16),
           _buildField(
             controller: _postalCtrl,
             label: "Code Postal",
             keyboardType: TextInputType.number,
             formatters: [FilteringTextInputFormatter.digitsOnly],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          _buildField(controller: _cityCtrl, label: "Ville"),
+          const SizedBox(height: 32),
 
-          // Ville
-          _buildField(
-            controller: _cityCtrl,
-            label: "Ville",
-          ),
-          const SizedBox(height: 24),
-
-          // Bouton Ajouter vêtement
+          // Add clothes button
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.add),
+            height: 52,
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.add, size: 18),
               label: const Text("Ajouter un vêtement"),
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const AjoutVetementPage()),
               ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF1A1A1A),
+                side: const BorderSide(color: Color(0xFF1A1A1A)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 12),
 
-          // Bouton Valider
+          // Save button
           SizedBox(
             width: double.infinity,
+            height: 52,
             child: ElevatedButton(
               onPressed: _saving ? null : _save,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF1A1A1A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               child: _saving
                   ? const SizedBox(
-                      height: 18,
-                      width: 18,
+                      height: 20,
+                      width: 20,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.black),
+                          strokeWidth: 2, color: Colors.white),
                     )
-                  : const Text("Valider"),
+                  : const Text(
+                      "Valider",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
             ),
           ),
           const SizedBox(height: 12),
 
-          // Bouton Se déconnecter
+          // Logout button
           SizedBox(
             width: double.infinity,
+            height: 52,
             child: OutlinedButton(
               onPressed: _logout,
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.redAccent,
-                side: const BorderSide(color: Colors.redAccent),
+                foregroundColor: Colors.red.shade400,
+                side: BorderSide(color: Colors.red.shade200),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              child: const Text("Se déconnecter"),
+              child: const Text(
+                "Se déconnecter",
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 30),
         ],
       ),
     );

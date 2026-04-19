@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     super.initState();
     _fadeController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 250),
     );
     _fadeAnimation = CurvedAnimation(
       parent: _fadeController,
@@ -52,33 +52,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ProfilePage(user: widget.user),
     ];
 
-    final titles = ['DÉCOUVRIR', 'MON PANIER', 'MON PROFIL'];
-
     return Scaffold(
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
-        title: Text(titles[_currentIndex]),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF0A0A0A), Color(0xFF111111)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        // Logo in AppBar
+        title: Image.asset(
+          'assets/images/logo.png',
+          height: 65,
+          fit: BoxFit.contain,
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(
             height: 1,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.transparent,
-                  Color(0xFFD4AF37),
-                  Colors.transparent,
-                ],
-              ),
-            ),
+            color: const Color(0xFFF0F0F0),
           ),
         ),
       ),
@@ -87,37 +77,35 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: pages[_currentIndex],
       ),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF111111),
+        decoration: const BoxDecoration(
+          color: Colors.white,
           border: Border(
-            top: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.2)),
+            top: BorderSide(color: Color(0xFFF0F0F0)),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.5),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
-            ),
-          ],
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: _onTabTap,
+          backgroundColor: Colors.white,
+          elevation: 0,
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.store_outlined),
-              activeIcon: Icon(Icons.store),
-              label: "Acheter",
+              icon: Icon(Icons.grid_view_rounded, size: 24),
+              activeIcon: Icon(Icons.grid_view_rounded,
+                  size: 24, color: Color(0xFF1A1A1A)),
+              label: "",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag_outlined),
-              activeIcon: Icon(Icons.shopping_bag),
-              label: "Panier",
+              icon: Icon(Icons.shopping_bag_outlined, size: 24),
+              activeIcon:
+                  Icon(Icons.shopping_bag, size: 24, color: Color(0xFF1A1A1A)),
+              label: "",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: "Profil",
+              icon: Icon(Icons.person_outline, size: 24),
+              activeIcon:
+                  Icon(Icons.person, size: 24, color: Color(0xFF1A1A1A)),
+              label: "",
             ),
           ],
         ),

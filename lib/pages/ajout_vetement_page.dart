@@ -66,14 +66,14 @@ class _AjoutVetementPageState extends State<AjoutVetementPage> {
 
   Future<void> _sauvegarder() async {
     if (_imageBytes == null) {
-      _afficherMessage("Veuillez sélectionner une image.");
+      _showSnack("Veuillez sélectionner une image.");
       return;
     }
     if (_titreCtrl.text.isEmpty ||
         _tailleCtrl.text.isEmpty ||
         _marqueCtrl.text.isEmpty ||
         _prixCtrl.text.isEmpty) {
-      _afficherMessage("Veuillez remplir tous les champs.");
+      _showSnack("Veuillez remplir tous les champs.");
       return;
     }
 
@@ -91,96 +91,170 @@ class _AjoutVetementPageState extends State<AjoutVetementPage> {
       });
 
       if (mounted) {
-        _afficherMessage("Vêtement ajouté avec succès ✓");
+        _showSnack("Vêtement ajouté avec succès ✓");
         Navigator.pop(context);
       }
     } catch (e) {
       debugPrint('Erreur sauvegarde: $e');
-      _afficherMessage("Erreur lors de la sauvegarde.");
+      _showSnack("Erreur lors de la sauvegarde.");
     } finally {
       if (mounted) setState(() => _enSauvegarde = false);
     }
   }
 
-  void _afficherMessage(String msg) {
+  void _showSnack(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  Widget _buildField({
+    required TextEditingController controller,
+    required String label,
+    String? hint,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? formatters,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1A1A1A),
+            letterSpacing: 0.3,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          inputFormatters: formatters,
+          style: const TextStyle(
+            color: Color(0xFF1A1A1A),
+            fontSize: 15,
+          ),
+          decoration: InputDecoration(
+            hintText: hint,
+            filled: true,
+            fillColor: const Color(0xFFF5F5F5),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFE8E8E8)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide:
+                  const BorderSide(color: Color(0xFF1A1A1A), width: 1.5),
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Ajouter un vêtement")),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          "Ajouter un vêtement",
+          style: TextStyle(
+            color: Color(0xFF1A1A1A),
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: const Icon(Icons.arrow_back_ios_new,
+              size: 18, color: Color(0xFF1A1A1A)),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(height: 1, color: const Color(0xFFF0F0F0)),
+        ),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Zone image
+            const SizedBox(height: 8),
+
+            // Image picker
             GestureDetector(
               onTap: _enDetection ? null : _choisirImage,
               child: Container(
                 width: double.infinity,
                 height: 200,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: const Color(0xFFD4AF37).withValues(alpha: 0.3),
-                  ),
+                  color: const Color(0xFFF5F5F5),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE8E8E8)),
                 ),
                 child: _imageBytes == null
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.add_photo_alternate,
-                            size: 60,
-                            color:
-                                const Color(0xFFD4AF37).withValues(alpha: 0.6),
-                          ),
-                          const SizedBox(height: 8),
+                          Icon(Icons.add_photo_alternate_outlined,
+                              size: 48, color: Colors.grey.shade400),
+                          const SizedBox(height: 10),
                           Text(
                             "Appuyer pour sélectionner une image",
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.4),
+                              color: Colors.grey.shade400,
+                              fontSize: 14,
                             ),
                           ),
                         ],
                       )
                     : ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(16),
                         child: Image.memory(_imageBytes!, fit: BoxFit.cover),
                       ),
               ),
             ),
             const SizedBox(height: 16),
 
-            // Catégorie IA
+            // IA detection result
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(16),
+                color: _categorieDetectee != null
+                    ? const Color(0xFFF0F7F0)
+                    : const Color(0xFFF8F8F8),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.08),
+                  color: _categorieDetectee != null
+                      ? const Color(0xFF7A9E7E).withValues(alpha: 0.3)
+                      : const Color(0xFFE8E8E8),
                 ),
               ),
               child: _enDetection
-                  ? Row(
+                  ? const Row(
                       children: [
-                        const SizedBox(
-                          width: 20,
-                          height: 20,
+                        SizedBox(
+                          width: 18,
+                          height: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Color(0xFFD4AF37),
+                            color: Color(0xFF1A1A1A),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Text(
                           "Analyse IA en cours...",
                           style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.7)),
+                            color: Color(0xFF888888),
+                            fontSize: 14,
+                          ),
                         ),
                       ],
                     )
@@ -188,22 +262,25 @@ class _AjoutVetementPageState extends State<AjoutVetementPage> {
                       children: [
                         Icon(
                           Icons.auto_awesome,
-                          color: const Color(0xFFD4AF37).withValues(alpha: 0.8),
-                          size: 20,
+                          size: 18,
+                          color: _categorieDetectee != null
+                              ? const Color(0xFF7A9E7E)
+                              : Colors.grey.shade400,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             _categorieDetectee == null
-                                ? "Catégorie détectée automatiquement par IA"
+                                ? "La catégorie sera détectée automatiquement par IA"
                                 : "IA a détecté : ${_categorieDetectee!.libelle}",
                             style: TextStyle(
                               color: _categorieDetectee == null
-                                  ? Colors.white.withValues(alpha: 0.4)
-                                  : Colors.white,
+                                  ? Colors.grey.shade400
+                                  : const Color(0xFF1A1A1A),
+                              fontSize: 14,
                               fontWeight: _categorieDetectee == null
                                   ? FontWeight.normal
-                                  : FontWeight.bold,
+                                  : FontWeight.w600,
                             ),
                           ),
                         ),
@@ -212,72 +289,81 @@ class _AjoutVetementPageState extends State<AjoutVetementPage> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFD4AF37)
-                                  .withValues(alpha: 0.15),
+                              color: const Color(0xFF1A1A1A),
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: const Color(0xFFD4AF37)
-                                    .withValues(alpha: 0.4),
-                              ),
                             ),
                             child: Text(
                               _categorieDetectee!.libelle,
                               style: const TextStyle(
-                                color: Color(0xFFD4AF37),
-                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
                                 fontSize: 12,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
                       ],
                     ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
-            TextField(
-              controller: _titreCtrl,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: "Titre"),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _tailleCtrl,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: "Taille"),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _marqueCtrl,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: "Marque"),
-            ),
-            const SizedBox(height: 12),
-            TextField(
+            // Form fields
+            _buildField(
+                controller: _titreCtrl,
+                label: "Titre",
+                hint: "Ex: T-shirt blanc"),
+            const SizedBox(height: 16),
+            _buildField(
+                controller: _tailleCtrl,
+                label: "Taille",
+                hint: "Ex: S, M, L, XL"),
+            const SizedBox(height: 16),
+            _buildField(
+                controller: _marqueCtrl,
+                label: "Marque",
+                hint: "Ex: Zara, H&M"),
+            const SizedBox(height: 16),
+            _buildField(
               controller: _prixCtrl,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: "Prix (€)"),
+              label: "Prix (€)",
+              hint: "Ex: 29.99",
               keyboardType: TextInputType.number,
-              inputFormatters: [
+              formatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
 
+            // Save button
             SizedBox(
               width: double.infinity,
+              height: 54,
               child: ElevatedButton(
                 onPressed:
                     (_enSauvegarde || _enDetection) ? null : _sauvegarder,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1A1A1A),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
                 child: _enSauvegarde
                     ? const SizedBox(
-                        height: 18,
-                        width: 18,
+                        height: 20,
+                        width: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.black),
+                            strokeWidth: 2, color: Colors.white),
                       )
-                    : const Text("Valider"),
+                    : const Text(
+                        "Valider",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
+            const SizedBox(height: 30),
           ],
         ),
       ),
