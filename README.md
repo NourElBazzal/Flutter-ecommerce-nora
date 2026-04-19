@@ -64,6 +64,34 @@ Images utilisées pour l'entraînement : disponibles dans `assets/images/trainin
 
 ---
 
+## Device utilisé
+
+Ce projet a été développé et testé sur **Google Chrome** (Flutter Web).
+
+⚠️ Lancer obligatoirement avec Chrome ou Edge :
+
+```bash
+flutter run -d chrome
+```
+
+---
+
+## 🤖 Images utilisées pour la classification IA
+
+Le modèle a été entraîné sur **Google Teachable Machine** avec des photos  
+de vêtements réparties en 4 catégories :
+
+| Catégorie | Nombre d'images |
+| --------- | --------------- |
+| Pantalon  | ~15 images      |
+| Short     | ~15 images      |
+| Haut      | ~15 images      |
+| Veste     | ~15 images      |
+
+Les images d'entraînement sont disponibles dans `assets/images/training_ia/`
+
+---
+
 ## Lancer le projet
 
 ### Prérequis
@@ -93,7 +121,7 @@ flutter run -d chrome
 
 ---
 
-## 📁 Structure du projet
+## Structure du projet
 
 ```
 projet_td2/
@@ -116,8 +144,13 @@ projet_td2/
     main.dart                    — Point d'entrée
   assets/
     images/
+      training_model_images/     — Images d'entraînement du modèle IA
+        Haut/                    — Photos de hauts
+        Pantalon/                — Photos de pantalons
+        Short/                   — Photos de shorts
+        Veste/                   — Photos de vestes
       model_unquant.tflite       — Modèle TFLite entraîné
-      labels.txt                 — Labels du modèle
+      labels.txt                 — Labels du modèle (4 catégories)
       logo.png                   — Logo de l'application
   web/
     index.html                   — TensorFlow.js + TFLite bridge
@@ -129,5 +162,5 @@ projet_td2/
 
 ## Auteur
 
-**Nour B.**  
+**Nour EL BAZZAL**  
 MIAGE IA2 - 2025/2026
