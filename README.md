@@ -120,7 +120,7 @@ Les images d'entraînement sont disponibles dans `assets/images/training_ia/`
 
 | Accuracy par classe                                  | Confusion Matrix                                   |
 | ---------------------------------------------------- | -------------------------------------------------- |
-| <img src="docs/accuracy_per_class.png" width="300"/> | <img src="docs/confusion_matrix.png" width="300"/> |
+| <img src="docs/accuracy_per_class.png" width="400"/> | <img src="docs/confusion_matrix.png" width="400"/> |
 
 </div>
 
