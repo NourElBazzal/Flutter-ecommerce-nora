@@ -171,7 +171,7 @@ L'application est conçue pour un écran de **390px de large** environ.
 
 ### ⚠️ Ne pas utiliser en plein écran desktop
 
-Le design est optimisé pour mobile — en plein écran desktop les grids et cards peuvent sembler déformés.
+Le design est optimisé pour mobile - en plein écran desktop les grids et cards peuvent sembler déformés.
 
 ---
 
