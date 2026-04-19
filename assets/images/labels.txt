@@ -1,4 +1,4 @@
-0 Pantalon
-1 Short
-2 Haut
+0 Haut
+1 Pantalon
+2 Short
 3 Veste

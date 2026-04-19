@@ -76,7 +76,12 @@ class VetementClassifier {
   }
 
   String _indexToLibelle(int index) {
-    const mapping = ['Pantalon', 'Short', 'Haut', 'Veste'];
+    const mapping = [
+      'Haut', // index 0
+      'Pantalon', // index 1
+      'Short', // index 2
+      'Veste', // index 3
+    ];
     if (index >= 0 && index < mapping.length) return mapping[index];
     return 'Haut';
   }
