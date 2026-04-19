@@ -116,13 +116,13 @@ Les images d'entraînement sont disponibles dans `assets/images/training_ia/`
 
 ## Performance du modèle IA
 
-### Accuracy par classe
+<div align="center">
 
-![Accuracy per class](docs/accuracy_per_class.png)
+| Accuracy par classe                                  | Confusion Matrix                                   |
+| ---------------------------------------------------- | -------------------------------------------------- |
+| <img src="docs/accuracy_per_class.png" width="200"/> | <img src="docs/confusion_matrix.png" width="200"/> |
 
-### Confusion Matrix
-
-![Confusion Matrix](docs/confusion_matrix.png)
+</div>
 
 ---
 
